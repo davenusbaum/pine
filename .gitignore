@@ -1,33 +1,59 @@
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
 
-# Precompiled Headers
-*.gch
-*.pch
+# Folder config file
+Desktop.ini
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
 
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
+# =========================
+# Operating System Files
+# =========================
 
-# Debug files
-*.dSYM/
-*.su
+# OSX
+# =========================
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+.settings/.jsdtscope
+.settings/org.eclipse.ltk.core.refactoring.prefs
+.settings/org.eclipse.php.core.prefs
+.sp-config.php
+
+# ignore SVN
+**/.svn/*
+
+.buildpath
+.project
+.settings/**
+.htaccess
+
+*.swp
