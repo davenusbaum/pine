@@ -1,0 +1,19 @@
+{
+    "name": "nusbaum/pine",
+    "type": "library",
+    "description": "A minimalist web framework for php",
+    "keywords": ["php","framework"],
+    "homepage": "https://github.com/davenusbaum/pine/wiki",
+    "license": "MIT",
+    "authors": [
+        {
+            "email": "nusbaum@mac.com",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "nusbaum\\": "src/"
+        }
+    }
+}
