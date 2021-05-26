@@ -1,5 +1,5 @@
 {
-	"name" : "Nusbaum/Pine",
+	"name" : "nusbaum/pine",
 	"type" : "library",
 	"description" : "A minimalist web framework for php",
 	"keywords" : [
@@ -8,6 +8,7 @@
 	"homepage" : "https://github.com/davenusbaum/pine/wiki",
 	"license" : "MIT",
 	"authors" : [{
+			"name" : "nusbaum",
 			"email" : "nusbaum@mac.com"
 		}
 	],
