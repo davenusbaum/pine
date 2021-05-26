@@ -1,9 +1,9 @@
 <?php
 namespace nusbaum\pine\middleware;
 
-use Nusbaum\Pine\Collection;
-use Nusbaum\Pine\Request;
-use Nusbaum\Pine\Response;
+use nusbaum\pine\Collection;
+use nusbaum\pine\Request;
+use nusbaum\pine\Response;
 
 class Flash extends Collection {
 	const FLASH_KEY = 'flashMessages';
