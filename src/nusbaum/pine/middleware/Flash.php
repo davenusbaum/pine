@@ -1,5 +1,5 @@
 <?php
-namespace pine\middleware;
+namespace nusbaum\pine\middleware;
 
 use nusbaum\pine\Collection;
 use nusbaum\pine\Request;
