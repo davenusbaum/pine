@@ -1,5 +1,5 @@
 <?php
-namespace nusbaum\pine;
+namespace Nusbaum\Pine;
 
 /**
  * Parameters extends Collection with methods specific to input filtering 
