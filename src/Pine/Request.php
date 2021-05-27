@@ -4,7 +4,7 @@
  * 
  * @copyright 2020 SchedulesPlus LLC
  */
-namespace nusbaum\pine;
+namespace Nusbaum\Pine;
 
 /**
  * An http request
