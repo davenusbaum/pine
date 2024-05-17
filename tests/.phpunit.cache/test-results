@@ -1,0 +1,1 @@
+{"version":1,"defects":{"Pine\\Unit\\RouteTest::testRoute":5,"Pine\\Unit\\RouteTest::testRouteClass":5},"times":{"Pine\\Unit\\RouteTest::testRoute":0.001,"Pine\\Unit\\RouteTest::testRouteFunction":0.001,"Pine\\Unit\\RouteTest::testRouteClass":0,"Pine\\Unit\\RouteTest::testRouteClassMethod":0}}

@@ -4,7 +4,7 @@
  * 
  * @copyright 2020 SchedulesPlus LLC
  */
-namespace nusbaum\pine;
+namespace Pine;
 
 /**
  * The cope Context supports a simple command driven MVC framework and

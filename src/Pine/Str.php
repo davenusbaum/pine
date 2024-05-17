@@ -1,6 +1,6 @@
 <?php
 /**
- * StringHelper.php
+ * Str.php
  *
  * Copyright 2020 David Nusbaum
  *
@@ -22,12 +22,12 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-namespace nusbaum\pine;
+namespace Nusbaum\Pine;
 
 /**
  * String helpers
  */
-class str {
+class Str {
     
     /**
      * Return true if haystack ends with needle.

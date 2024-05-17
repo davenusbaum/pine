@@ -1,5 +1,5 @@
 <?php
-namespace nusbaum\pine\middleware;
+namespace Nusbaum\Pine\Middleware;
 
 class FlashMessage {
 	const SUCCESS = 0;

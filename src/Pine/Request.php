@@ -1,15 +1,19 @@
 <?php
-/**
- * Request.php
- * 
- * @copyright 2020 SchedulesPlus LLC
- */
-namespace Nusbaum\Pine;
+
+namespace Pine;
+
+use Nusbaum\Pine\Parameters;
 
 /**
  * An http request
  */
 class Request {
+
+    /**
+     * The application that is handling the request
+     * @var Application
+     */
+    public $app;
 
 	/** 
 	 * The base path for the application url.
@@ -23,14 +27,15 @@ class Request {
 	 * @var string . 
 	 */
 	public $baseUrl;
-	
-	/** 
-	 * The content type for this request.
-	 * Note: This field is only set on request that provided content,
-	 * such as POST requests.
-	 * @var string  
-	 */
-	public $contentType;
+
+    /**
+     * The body of the request
+     * @var Parameters
+     */
+    public $body;
+
+    /** @var Parameters */
+    public $cookies;
 	
 	/** 
 	 * The host name provided for this request.
@@ -45,6 +50,9 @@ class Request {
 	 * The host property includes the port when a none standard port is used.
 	 * @var string The name of the host machine. */
 	public $hostname;
+
+    /** @var string The remote ip address used for this request. */
+    public $ip;
 	
 	/** 
 	 * The HTTP method for this request.
@@ -58,8 +66,8 @@ class Request {
 	 */
 	public $originalUrl;
 	
-	/** @var Parameters The request paramaters */
-	public $parameters;
+	/** @var Parameters The named route parameters */
+	public $params;
 	
 	/** 
 	 * The url path, after the base path, for this request. 
@@ -79,9 +87,17 @@ class Request {
 	 * @var string 
 	 */
 	public $protocol;
-	
-	/** @var string The remote ip address used for this request. */
-	public $ip;
+
+    /**
+     * The query parameters
+     * @var ArrayMap
+     */
+    public $query;
+
+    /**
+     * @var Response The response for this request
+     */
+    public $res;
 	
 	/** @var Route */
 	public $route;
@@ -95,47 +111,42 @@ class Request {
 	
 	/** @var string The full name of the base script for this request. */
 	public $scriptName;
-	
-	/** @var array Usually $_REQUEST */
-	public $request;
-	
-	/** @var array */
-	private $attributes;
+
+    /** @var bool True if the protocol is HTTPS */
+    public $secure = false;
+
 	
 	/** @var array Usually $_SERVER */
 	private $server;
 	
 	/** @var float The request start time with milliseconds */
 	private $timestamp;
-	
-	/** @var array */
-	private static $trustedProxies;
-	
-	/**
-	 * Set the ip addresses of the proxies that can be trusted
-	 * @param string[] 
-	 */
-	public static function setTrustedProxies($proxies) {
-		self::$trustedProxies = $proxies;
-	}
 
 	/**
 	 * Create a new request object
+     * @param Application $app The application handling the request
+     * @param array $server
+     * @param array $get
+     * @param array $post
+     * @param array $cookie
 	 */
-	public function __construct($server,$request) {
+	public function __construct($app, $server, $get, $post, $cookie) {
+        $this->app = $app;
 		$this->server = $server;
-		$this->parameters = new Parameters($request);
-		$this->attributes = array();
+		$this->query = new Parameters($get);
+        $this->cookies = new Parameters($cookie);
+        $this->res = new Response();
 		
-		// see if the remote address is a trusted proxy
-		if(isset(self::$trustedProxies) && in_array($server['REMOTE_ADDR'], self::$trustedProxies)) {
-			$trustProxy = true;
-		} else {
-			$trustProxy = false;
-		}
+		// check for trusted proxy
+        $trust_proxy = false;
+		if ($trusted = $app->get('trust proxy')) {
+            if ($trusted === true || is_array($trusted) && in_array($server['REMOTE_ADDR'], $trusted)) {
+                $trust_proxy = true;
+            }
+        }
 		
 		// set the remote address
-		if($trustProxy && isset($server['HTTP_X_FORWARDED_FOR'])) {
+		if ($trust_proxy && isset($server['HTTP_X_FORWARDED_FOR'])) {
 			$this->ip = $server['HTTP_X_FORWARDED_FOR'];
 		}  else {
 			$this->ip = $server['REMOTE_ADDR'];
@@ -144,11 +155,6 @@ class Request {
 		// set the protocol
 		if(isset($server['SERVER_PROTOCOL'])) {
 			$this->protocol = $server['SERVER_PROTOCOL'];
-		}
-		
-		// set the content type
-		if(isset($server['CONTENT_TYPE'])){
-			$this->contentType = $server['CONTENT_TYPE'];
 		}
 		
 		// set the script name
@@ -178,14 +184,14 @@ class Request {
 				strlen($this->basePath));
 		
 		//set the port
-		if($trustProxy && isset($server['HTTP_X_FORWARDED_PORT'])) {
+		if ($trust_proxy && isset($server['HTTP_X_FORWARDED_PORT'])) {
 			$this->port = $server['HTTP_X_FORWARDED_PORT'];
 		} else if(isset($server['SERVER_PORT'])) {
 			$this->port = $server['SERVER_PORT'];
 		} 
 		
 		// set the host and include port if not 80 or 443
-		if($trustProxy && isset($server['HTTP_X_FORWARDED_HOST'])) {
+		if($trust_proxy && isset($server['HTTP_X_FORWARDED_HOST'])) {
 			$this->host = $server['HTTP_X_FORWARDED_HOST'];
 		} else if(isset($server['HTTP_HOST'])) {
 			$this->host = $server['HTTP_HOST'];
@@ -207,7 +213,7 @@ class Request {
 		$this->method = $server['REQUEST_METHOD'];
 		
 		// set the scheme
-		if($trustProxy && isset($server['HTTP_X_FORWARDED_PROTO'])) {
+		if($trust_proxy && isset($server['HTTP_X_FORWARDED_PROTO'])) {
 			$this->scheme = $server['HTTP_X_FORWARDED_PROTO'];
 		} else if(isset($server['HTTPS']) && $server['HTTPS'] !== 'off') {
 			$this->scheme = "https";
@@ -216,6 +222,9 @@ class Request {
 		} else	{
 			$this->scheme = "http";
 		}
+        if ($this->scheme === 'https') {
+            $this->secure = true;
+        }
 		
 		// set original url
 		$this->originalUrl = "{$this->scheme}://{$this->host}";
@@ -225,6 +234,23 @@ class Request {
 		
 		// set the base url
 		$this->baseUrl = "{$this->scheme}://{$this->host}{$this->basePath}";
+
+        // set the body
+        if(isset($server['CONTENT_TYPE']) && Str::endsWith($server['CONTENT_TYPE'],'json')) {
+            $content = json_decode(file_get_contents('php://input'),1);
+            if($content && is_array($content)) {
+               $this->body = new Parameters($content);
+            } else {
+                $this->body = new Parameters();
+            }
+        } else {
+            $this->body = new Parameters($post);
+        }
+
+        // set the route
+        if (isset($this->mathod) && isset($this->path)) {
+            $this->route = $app->router->find($this->method, $this->path);
+        }
 	}
 
 	public function __get($name) {
@@ -242,34 +268,11 @@ class Request {
 	  * @param string $default
 	  * @return string
 	  */
-	 public function getHeader($name,$default=null) {
+	 public function get($name,$default=null) {
 	 	$name = 'HTTP_'.strtoupper(str_replace('-','_',$name));
 	 	if(isset($this->server[$name])) {
 	 		return $this->server[$name];
 	 	}
 	 	return $default;
-	 }
-	 
-	 /**
-	  * Return true if the command request is a
-	  * @return boolean
-	  */
-	 public function isPost() {
-	 	return ('POST' === $this->method ? true : false);
-	 }
-	 
-	 /**
-	  * Set the route for this request
-	  * @param Router $router
-	  * @return Route
-	  */
-	 public function route($router) {
-	 	$this->route = $router->route($this->method,$this->path);
-	 	if(isset($this->route->params)) {
-	 		foreach ($this->route->params as $name => $value) {
-	 			$this->parameters->set($name,$value);
-	 		}
-	 	}
-	 	return $this->route;
 	 }
 }

@@ -1,11 +1,11 @@
 <?php
 namespace Nusbaum\Pine;
 
+use Pine\ReferencedArrayMap;
+
 /**
- * Parameters extends Collection with methods specific to input filtering 
- * @author nusbaum
- *
+ * Parameters extends ReferencedArrayMap methods specific to input filtering
  */
-class Parameters extends Collection {
+class Parameters extends ArrayMap {
 	
 }

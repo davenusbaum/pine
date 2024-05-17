@@ -1,21 +1,35 @@
 {
-	"name" : "nusbaum/pine",
+	"name" : "davenusbaum/pine",
 	"type" : "library",
-	"description" : "A minimalist web framework for php",
+	"description" : "A minimalist web framework for php inspired by express.js",
 	"keywords" : [
 		"framework"
 	],
 	"homepage" : "https://github.com/davenusbaum/pine/wiki",
 	"license" : "MIT",
 	"authors" : [{
-			"name" : "nusbaum",
-			"email" : "nusbaum@mac.com"
+			"name" : "David Nusbaum",
+			"email" : "david.nusbaum@gmail.com",
+			"role": "Deverloper"
 		}
 	],
+	"require": {
+		"php": ">=7.1.0",
+		"davenusbaum/jaunt": "dev-main"
+	},
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "/Users/nusbaum/Sites/jaunt"
+		}
+	],
+	"require-dev": {
+		"phpunit/phpunit": ">=7.0 < 10"
+	},
 	"autoload" : {
 		"psr-4" : {
-			"Nusbaum\\" : "src"
+			"Pine\\" : "src/Pine"
 		}
 	},
-	"minimum-stability" : "stable"
+	"minimum-stability" : "dev"
 }
