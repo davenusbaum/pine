@@ -3,7 +3,7 @@
 namespace Pine;
 
 /**
- * An http request
+ * An HTTP request
  */
 class Request {
 

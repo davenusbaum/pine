@@ -4,6 +4,9 @@ namespace Pine;
 
 use Pine\AbstractArray;
 
+/**
+ * An object wrapper around an associative array
+ */
 class ArrayMap extends AbstractArray
 {
     /**

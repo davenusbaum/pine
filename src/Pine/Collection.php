@@ -1,6 +1,9 @@
 <?php
-namespace pine;
+namespace Pine;
 
+/**
+ * @deprecated Splitting into ArrayMap and ArrayList
+ */
 class Collection extends AbstractArray {
 	
 	/** @var array The underlying array */
@@ -55,14 +58,6 @@ class Collection extends AbstractArray {
 		foreach ($list as $item) {
 			$this->add($item);
 		}
-	}
-	
-	/**
-	 * Returns the number of elements in the underlying array
-	 * @return int
-	 */
-	public function count() {
-		return count($this->array);
 	}
 
 	/**

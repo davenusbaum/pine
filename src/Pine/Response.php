@@ -1,15 +1,9 @@
 <?php
-/**
- * Response.php
- * 
- * @copyright 2020 SchedulesPlus LLC
- */
+
 namespace Pine;
 
 /**
- * The cope Context supports a simple command driven MVC framework and
- * provides helper functions over PHP's $_ENV, $_SERVER and $_REQUEST
- * superglobal arrays.
+ * An HTTP response to an HTTP request
  */
 class Response {
 

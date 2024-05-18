@@ -3,7 +3,7 @@
 namespace Pine;
 
 /**
- * The base level method for a object wrapper around an array
+ * Abstract class that provides a basic object wrapper for an array
  */
 abstract class AbstractArray implements \ArrayAccess, \Iterator
 {

@@ -2,6 +2,9 @@
 
 namespace Pine;
 
+/**
+ * A route that was matched by the router
+ */
 class Route {
 	
 	/** @var array The invocation stack for this route */

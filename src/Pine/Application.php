@@ -4,6 +4,9 @@ namespace Pine;
 
 use Pine\Router;
 
+/**
+ * Application represents the web application
+ */
 class Application
 {
     /** @var Router */

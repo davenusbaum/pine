@@ -4,7 +4,7 @@
  *
  * @copyright 2020 SchedulesPlus LLC
  */
-namespace Nusbaum\Pine\Middleware;
+namespace Pine\Middleware;
 
 use Nusbaum\Pine\Collection;
 use Nusbaum\Pine\Request;

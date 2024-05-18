@@ -2,6 +2,9 @@
 
 namespace Pine;
 
+/**
+ * A fast tree based router
+ */
 class Router extends \Jaunt\Router {
     /**
      * Returns the route that matches the provided method and path
