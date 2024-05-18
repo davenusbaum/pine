@@ -3,7 +3,7 @@
 namespace Pine;
 
 /**
- * Parameters extends ReferencedArrayMap methods specific to input filtering
+ * Parameters extends ArrayMap methods specific to input filtering
  */
 class Parameters extends ArrayMap {
 	

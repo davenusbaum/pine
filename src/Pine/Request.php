@@ -2,8 +2,6 @@
 
 namespace Pine;
 
-use Nusbaum\Pine\Parameters;
-
 /**
  * An http request
  */
