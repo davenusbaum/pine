@@ -21,7 +21,7 @@ abstract class AbstractArray implements \ArrayAccess, \Iterator
      * Return the current element
      * @return mixed
      */
-    public function current() {
+    public function current(): mixed {
         return current($this->array);
     }
 
@@ -29,14 +29,15 @@ abstract class AbstractArray implements \ArrayAccess, \Iterator
      * Return the key of the current element
      * @return mixed
      */
-    public function key() {
+    public function key(): mixed {
         return key($this->array);
     }
 
     /**
      * Move forward to next element
+     * @return void
      */
-    public function next() {
+    public function next(): void {
         next($this->array);
     }
 
@@ -45,7 +46,7 @@ abstract class AbstractArray implements \ArrayAccess, \Iterator
      * @param mixed $offset
      * @return bool
      */
-    public function offsetExists($offset) {
+    public function offsetExists($offset): bool {
         return isset($this->array[$offset]);
     }
 
@@ -54,7 +55,7 @@ abstract class AbstractArray implements \ArrayAccess, \Iterator
      * @param mixed $offset
      * @return mixed
      */
-    public function offsetGet($offset) {
+    public function offsetGet($offset): mixed {
         return isset($this->array[$offset]) ? $this->array[$offset] : null;
     }
 
@@ -62,8 +63,9 @@ abstract class AbstractArray implements \ArrayAccess, \Iterator
      * Assign a value to the specified offset
      * @param mixed $offset
      * @param mixed $value
+     * @return void
      */
-    public function offsetSet($offset, $value) {
+    public function offsetSet($offset, $value): void {
         if (is_null($offset)) {
             $this->array[] = $value;
         } else {
@@ -74,15 +76,16 @@ abstract class AbstractArray implements \ArrayAccess, \Iterator
     /**
      * Unset an offset
      * @param mixed $offset
+     * @return void
      */
-    public function offsetUnset($offset) {
+    public function offsetUnset($offset): void {
         unset($this->container[$offset]);
     }
 
     /**
      * Rewind the Iterator to the first element
      */
-    public function rewind() {
+    public function rewind(): void {
         reset($this->array);
     }
 
@@ -96,9 +99,9 @@ abstract class AbstractArray implements \ArrayAccess, \Iterator
 
     /**
      * Checks if current position is valid
-     * @return boolean
+     * @return bool
      */
-    public function valid() {
+    public function valid():bool {
         return key($this->array) !== null;
     }
 }
