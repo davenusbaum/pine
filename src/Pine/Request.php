@@ -133,7 +133,7 @@ class Request {
 		$this->server = $server;
 		$this->query = new Parameters($get);
         $this->cookies = new Parameters($cookie);
-        $this->res = new Response();
+        $this->res = new Response($this);
 		
 		// check for trusted proxy
         $trust_proxy = false;
