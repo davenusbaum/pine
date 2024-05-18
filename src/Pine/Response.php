@@ -92,7 +92,7 @@ class Response {
 	 	if(isset($this->locals)) {
 	 		extract($this->locals->toArray(),EXTR_SKIP);
 	 	}
-	 	$filename = $this->app->get('views').'/'.$page.'php';
+	 	$filename = $this->app->get('views').'/'.$page.'.php';
 	 	if(false === @include($filename)) {
 	 		trigger_error("Could not load view ($filename)");
 	 	}
