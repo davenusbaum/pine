@@ -15,7 +15,7 @@ class Router extends \Jaunt\Router {
             $route = new Route();
             $route->params = $found['params'];
             $route->stack = $found['stack'];
-            return $found;
+            return $route;
         }
         return null;
     }
