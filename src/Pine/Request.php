@@ -246,7 +246,7 @@ class Request {
         }
 
         // set the route
-        if (isset($this->mathod) && isset($this->path)) {
+        if (isset($this->method) && isset($this->path)) {
             $this->route = $app->router->find($this->method, $this->path);
         }
 	}

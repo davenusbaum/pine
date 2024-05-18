@@ -43,7 +43,7 @@ class Application
     {
         $req = new Request($this, $server, $get, $post, $cookie);
         if ($req->route) {
-            $req->route($req, $req->res);
+            $req->route->__invoke($req, $req->res);
         }
     }
 
