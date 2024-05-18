@@ -19,7 +19,8 @@ class Application
     public function __construct($tree = []) {
         $this->router = new Router($tree);
         $this->settings = new ArrayMap([
-            'trust proxy' => false
+            'trust proxy' => false,
+            'views' => dirname(getcwd()).'/views'
         ]);
     }
 

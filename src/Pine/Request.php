@@ -113,6 +113,9 @@ class Request {
     /** @var bool True if the protocol is HTTPS */
     public $secure = false;
 
+    /** @var array */
+    private $attributes;
+
 	
 	/** @var array Usually $_SERVER */
 	private $server;
@@ -129,6 +132,7 @@ class Request {
      * @param array $cookie
 	 */
 	public function __construct($app, $server, $get, $post, $cookie) {
+        $this->attributes = [];
         $this->app = $app;
 		$this->server = $server;
 		$this->query = new Parameters($get);
