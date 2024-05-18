@@ -1,7 +1,6 @@
 <?php
-namespace Nusbaum\Pine;
 
-use Pine\ReferencedArrayMap;
+namespace Pine;
 
 /**
  * Parameters extends ReferencedArrayMap methods specific to input filtering
