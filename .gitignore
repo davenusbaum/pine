@@ -60,3 +60,4 @@ Temporary Items
 
 .idea/*
 vendor/**
+tests/.phpunit.cache/test-results

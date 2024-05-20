@@ -16,12 +16,28 @@ class Route {
 	/** @var string The path that matches this route */
 	public $path = '';
 
+    /** @var Request|null */
+    protected $req;
+
+    /** @var Response|null */
+    protected $res;
+
     /**
-     * Invoke the route handlers using a generator
+     * Run a request and response through this route
      * @param Request $req
      * @param Response $res
+     * @return void
      */
-    public function __invoke($req,$res) {
+    public function run($req, $res) {
+        $this->req = $req;
+        $this->res = $res;
+        $this();
+    }
+
+    /**
+     * Invoke the next handler for this route
+     */
+    public function __invoke() {
         if(count($this->stack)) {
             $next = array_shift($this->stack);
             if (is_array($next)) {
@@ -29,12 +45,7 @@ class Route {
             } else if (is_string($next)) {
                 $next = new $next();
             }
-            if($next) {
-                foreach($next($req,$res) as $v) {
-                    $this($req,$res);
-                }
-            }
+            call_user_func($next, $this->req, $this->res, $this);
         }
-        return;
     }
 }

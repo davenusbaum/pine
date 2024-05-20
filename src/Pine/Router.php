@@ -12,10 +12,11 @@ class Router extends \Jaunt\Router {
      * @param string $path
      * @return Route|null
      */
-    public function find($method, $path) {
-        $found = parent::find($method, $path);
+    public function match($method, $path) {
+        $found = parent::match($method, $path);
         if ($found) {
             $route = new Route();
+            $route->path = $found['path'];
             $route->params = $found['params'];
             $route->stack = $found['stack'];
             return $route;

@@ -3,6 +3,7 @@
 namespace Pine\Unit;
 
 use PHPUnit\Framework\TestCase;
+use Pine\Application;
 use Pine\Request;
 use Pine\Response;
 use Pine\Route;
@@ -15,22 +16,24 @@ class RouteTest extends TestCase
 
     public function testRouteFunction() {
         $route = new Route();
-        $route->stack = [function($req, $res){
+        $route->stack = [function($req, $res, $next){
             echo "Hello World";
         }];
-        $req = new Request([],[],[],[]);
+        $app = new Application();
+        $req = new Request($app, [], [], [], []);
         $res = new Response($req);
         $this->expectOutputString('Hello World');
-        $route($req, $res);
+        $route->run($req, $res);
     }
 
     public function testRouteClass() {
         $route = new Route();
         $route->stack = [HelloWorldController::class];
-        $req = new Request([],[],[],[]);
+        $app = new Application();
+        $req = new Request($app, [],[],[],[]);
         $res = new Response($req);
         $this->expectOutputString('Hello World!');
-        $route($req, $res);
+        $route->run($req, $res);
     }
 
     public function testRouteClassMethod() {
@@ -38,9 +41,10 @@ class RouteTest extends TestCase
         $route->stack = [
             [HelloWorldController::class, 'hello']
         ];
-        $req = new Request([],[],[],[]);
+        $app = new Application();
+        $req = new Request($app, [], [], [], []);
         $res = new Response($req);
         $this->expectOutputString('Hello World!!');
-        $route($req, $res);
+        $route->run($req, $res);
     }
 }

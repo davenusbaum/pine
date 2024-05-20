@@ -6,11 +6,11 @@
  */
 namespace Pine\Middleware;
 
-use Nusbaum\Pine\Collection;
-use Nusbaum\Pine\Request;
-use Nusbaum\Pine\Response;
+use pine\ArrayMap;
+use pine\Request;
+use pine\Response;
 
-class Session extends Collection {
+class Session extends ArrayMap {
 	
 	public $active = false;
 	
@@ -21,7 +21,8 @@ class Session extends Collection {
 	public function __construct() {
 		if((PHP_SESSION_ACTIVE == ($status = session_status()))
 			|| (PHP_SESSION_NONE == $status && session_start())) {
-			parent::__construct(null,$_SESSION);
+			parent::__construct(null);
+            $this->array = &$_SESSION;
 		} else {
 			parent::__construct();
 			trigger_error('Session cannot be started');
@@ -29,19 +30,18 @@ class Session extends Collection {
 	}
 	
 	/**
-	 *
 	 * @param Request $req
 	 * @param Response $res
-	 * @param callable
+	 * @param callable $next
 	 */
-	public function __invoke($req,$res,$next) {
+	public function __invoke($req, $res, $next) {
 		if($this->isActive()) {
 			$req->session = $this;
-			$next();
 		} else {
 			trigger_error('Session cannot be started');
-			$res->sendStatus(500);
+			$res->status(500);
 		}
+
 	}
 	
 	/**
