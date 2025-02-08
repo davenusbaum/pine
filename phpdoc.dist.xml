@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<phpdoc>
-	<title>Pine API</title>
-	<files>
-		<directory>src</directory>
-	</files>
-	<parser>
-		<target>/tmp</target>
-	</parser>
-	<transformer>
-		<target>doc/api</target>
-	</transformer>
-</phpdoc>
+<phpdocumentor configVersion="3.0">
+	<version number="1.0.0">
+		<api>
+			<source dsn=".">
+				<path>src</path>
+			</source>
+			<ignore>
+				<path>vendor/**/*</path>
+				<path>tests/**/*</path>
+			</ignore>
+		</api>
+	</version>
+	<paths>
+		<output>doc/api</output>
+		<cache>build/cache</cache>
+	</paths>
+	<template name="./vendor/saggre/phpdocumentor-markdown/themes/markdown"/>
+</phpdocumentor>

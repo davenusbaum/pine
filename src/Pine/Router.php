@@ -12,7 +12,7 @@ class Router extends \Jaunt\Router {
      * @param string $path
      * @return Route|null
      */
-    public function match($method, $path) {
+    public function match($method, $path): ?Route {
         $found = parent::match($method, $path);
         if ($found) {
             $route = new Route();

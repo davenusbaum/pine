@@ -8,15 +8,15 @@ class FlashMessage {
 	const ERROR = 3;
 	
 	/** @var string The message text. */
-	public $message;
+	public string $message;
 	
-	/** @var string The type of message. */
-	public $type;
+	/** @var int The type of message. */
+	public int $type;
 	
 	/** @var string The name of the input field is appropriate. */
-	public $field;
+	public string $field;
 	
-	public function __construct($msg,$type=1,$field=null) {
+	public function __construct(string $msg, int $type = 1, ?string $field = null) {
 		$this->message = $msg;
 		if($type === E_USER_NOTICE) {
 			$this->type = self::INFO;

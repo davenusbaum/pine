@@ -2,81 +2,77 @@
 
 namespace Pine;
 
-use Pine\AbstractArray;
+use Iterator;
 
 /**
- * An object wrapper around an associative array
+ * Parameters hold key value pairs and is intended to have behavior similar
+ * to that of a JavaScript object (in order to keep with the Express theme).
  */
-class ArrayMap extends AbstractArray
+class ArrayMap extends ArrayCore
 {
-    /**
-     * Create a new collection object
-     * @param array $array optional array passed by value
-     */
-    public function __construct($array = null) {
-        if(isset($array) && is_array($array)) {
-            $this->array = $array;
-        } else {
-            $this->array = array();
-        }
-    }
 
     /**
-     * Magic method to return a collection item as a property.
-     * @param mixed $name
+     * Magic method to return a Parameter item as a property.
+     * @param string $name
      * @return mixed
      */
-    public function __get($name) {
-        return $this->get($name);
+    public function __get(string $name): mixed {
+        return $this->offsetGet($name);
     }
 
     /**
      * Magic method to set a collection item as a property.
-     * @param mixed $name
-     * @param mixed $value
-     */
-    public function __set($name,$value) {
-        $this->set($name,$value);
-    }
-
-    /**
-     * If true if the named value is set for the collection
-     * @param string $name
-     * @return boolean
-     */
-    public function has($name) {
-        return isset($this->array[$name]);
-    }
-
-    /**
-     * Returns the value for the specified name.
-     * @param string $name
-     * @param mixed $default
-     * @return mixed
-     */
-    public function get($name,$default = null) {
-        if(isset($this->array[$name])) {
-            return $this->array[$name];
-        }
-        return $default;
-    }
-
-    /**
-     * Remove a named value from the collection
-     * @param mixed $name
-     */
-    public function remove($name) {
-        if(array_key_exists($name, $this->array)) {
-            unset($this->array[$name]);
-        }
-    }
-
-    /**
-     * Set a value in the collection
      * @param string $name
      * @param mixed $value
      */
-    public function set($name,$value) {
-        $this->array[$name] = $value;
+    public function __set(string $name, mixed $value) {
+        $this->offsetSet($name, $value);
+    }
+
+    public function addAll(array|Iterator $parameters): void {
+        foreach ($parameters as $name => $value) {
+            $this->array[$name] = $value;
+        }
+    }
+
+    public function get(string $name, mixed $default = null): mixed {
+        return $this->offsetGet($name) ?? $default;
+    }
+
+    /**
+     * Returns true if the named value is set for the collection
+     * @param string $name
+     * @return bool
+     */
+    public function has(string $name): bool {
+        return $this->offsetExists($name);
+    }
+
+    public function keys(): array {
+        return array_keys($this->array);
+    }
+
+    /**
+     * Delete a parameter
+     * @param string $name
+     */
+    public function remove(string $name): void {
+        $this->offsetUnset($name);
+    }
+
+    public function set(string $name, mixed $value): void {
+        $this->offsetSet($name, $value);
+    }
+
+    /**
+     * Returns the collection as an array
+     * @return array
+     */
+    public function toArray(): array {
+        return $this->array;
+    }
+
+    public function values(): array {
+        return array_values($this->array);
     }
 }

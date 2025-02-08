@@ -1,7 +1,5 @@
 <?php
 
-namespace Pine\Unit;
-
 use PHPUnit\Framework\TestCase;
 use Pine\Application;
 use Pine\Request;

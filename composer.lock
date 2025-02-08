@@ -4,15 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2c7c9778aa547df7d1c557b7226898a7",
+    "content-hash": "14c83a24fee6e6a0346a4a99f3c4cc1c",
     "packages": [
         {
             "name": "davenusbaum/jaunt",
             "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "/Users/nusbaum/Sites/jaunt",
-                "reference": "61c3bd98ea66522d4d17d1227281fe06cd1c5c6d"
+                "url": "https://github.com/davenusbaum/jaunt.git",
+                "reference": "74ecc039a6ceb3960384d32caa4d655418f5aae4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/davenusbaum/jaunt/zipball/74ecc039a6ceb3960384d32caa4d655418f5aae4",
+                "reference": "74ecc039a6ceb3960384d32caa4d655418f5aae4",
+                "shasum": ""
             },
             "require": {
                 "php": ">=7.1.0"
@@ -27,6 +33,7 @@
                     "Jaunt\\": "src/Jaunt/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -38,7 +45,11 @@
                 }
             ],
             "description": " A tree based router",
-            "time": "2024-05-16T02:26:07+00:00"
+            "support": {
+                "issues": "https://github.com/davenusbaum/jaunt/issues",
+                "source": "https://github.com/davenusbaum/jaunt/tree/v0.0.1"
+            },
+            "time": "2024-05-20T14:11:38+00:00"
         }
     ],
     "packages-dev": [
@@ -351,6 +362,65 @@
                 "source": "https://github.com/phar-io/version/tree/3.2.1"
             },
             "time": "2022-02-21T01:04:05+00:00"
+        },
+        {
+            "name": "phpstan/phpstan",
+            "version": "2.1.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpstan/phpstan.git",
+                "reference": "64ae44e48214f3deebdaeebf2694297a10a2bea9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/64ae44e48214f3deebdaeebf2694297a10a2bea9",
+                "reference": "64ae44e48214f3deebdaeebf2694297a10a2bea9",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4|^8.0"
+            },
+            "conflict": {
+                "phpstan/phpstan-shim": "*"
+            },
+            "default-branch": true,
+            "bin": [
+                "phpstan",
+                "phpstan.phar"
+            ],
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHPStan - PHP Static Analysis Tool",
+            "keywords": [
+                "dev",
+                "static analysis"
+            ],
+            "support": {
+                "docs": "https://phpstan.org/user-guide/getting-started",
+                "forum": "https://github.com/phpstan/phpstan/discussions",
+                "issues": "https://github.com/phpstan/phpstan/issues",
+                "security": "https://github.com/phpstan/phpstan/security/policy",
+                "source": "https://github.com/phpstan/phpstan-src"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/ondrejmirtes",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/phpstan",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-02-07T15:05:24+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -773,6 +843,57 @@
                 }
             ],
             "time": "2024-04-30T05:22:06+00:00"
+        },
+        {
+            "name": "saggre/phpdocumentor-markdown",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Saggre/phpDocumentor-markdown.git",
+                "reference": "f9bb90abde2c7c7c740265ae5e3bab5cfa2d9ed4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Saggre/phpDocumentor-markdown/zipball/f9bb90abde2c7c7c740265ae5e3bab5cfa2d9ed4",
+                "reference": "f9bb90abde2c7c7c740265ae5e3bab5cfa2d9ed4",
+                "shasum": ""
+            },
+            "require-dev": {
+                "php": ">=7.4",
+                "phpunit/phpunit": "^9.5",
+                "twig/twig": "2.*"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpDocumentorMarkdown\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Saggre",
+                    "email": "sakri.koskimies@hotmail.com"
+                }
+            ],
+            "description": "Markdown template for phpDocumentor3",
+            "keywords": [
+                "documentation",
+                "github",
+                "gitlab",
+                "markdown",
+                "phpDocumentor",
+                "phpdoc"
+            ],
+            "support": {
+                "issues": "https://github.com/Saggre/phpDocumentor-markdown/issues",
+                "source": "https://github.com/Saggre/phpDocumentor-markdown/tree/0.1.4"
+            },
+            "time": "2023-11-24T13:50:50+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -1792,12 +1913,13 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "davenusbaum/jaunt": 20
+        "saggre/phpdocumentor-markdown": 20,
+        "phpstan/phpstan": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.1.0"
+        "php": ">= 8.1.0"
     },
     "platform-dev": [],
     "plugin-api-version": "2.3.0"

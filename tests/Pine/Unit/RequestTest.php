@@ -1,22 +1,18 @@
 <?php
 
-namespace Pine\Unit;
-
 use PHPUnit\Framework\TestCase;
 use Pine\Application;
 use Pine\Request;
-use Pine\Response;
 
 class RequestTest extends TestCase
 {
-    public $app;
+    public Application $app;
 
     public function setUp(): void {
         $this->app = new Application();
     }
 
-    public function testPort()
-    {
+    public function testPort() {
         $req = new Request(
             $this->app,
             [

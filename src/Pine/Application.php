@@ -2,18 +2,16 @@
 
 namespace Pine;
 
-use Pine\Router;
-
 /**
  * Application represents the web application
  */
 class Application
 {
     /** @var Router */
-    public $router;
+    public Router $router;
 
     /** @var ArrayMap */
-    protected $settings;
+    protected ArrayMap $settings;
 
     /**
      * Construct an Application object
@@ -32,7 +30,7 @@ class Application
      * @param string $name The setting name
      * @return mixed
      */
-    public function get($name) {
+    public function get(string $name): mixed {
         return $this->settings->get($name);
     }
 
@@ -57,7 +55,7 @@ class Application
      * @param mixed $value
      * @return void
      */
-    public function set($name, $value) {
+    public function set(string $name, mixed $value): void {
         $this->settings->set($name, $value);
     }
 }

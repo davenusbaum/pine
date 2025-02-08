@@ -4,60 +4,98 @@ namespace Pine;
 
 /**
  * An HTTP request
- *
- * @property string $basePath The base path for the application
- * @property string $host The host, which may include the port
- * @property string $hostname Just the host name
- * @property string $ip Returns the remote client IP address
- * @property string $ips The IP address plus the IP addresses of any untrusted
- * @property string $method The request method
- * @property string $originalUrl
- * @property string $path The url path for the request (after the base path)
- * @property int $port The port that received the request
- * @property string $protocol The request protocol string
- * @property bool $secure True if the protocol is https
- * @property string $scriptName
- * @property string $trustProxy True if the proxy can be trusted
  */
 class Request {
 
     /** @var Application The application handling the request */
-    public $app;
+    public Application $app;
+
+    public string $baseUrl;
 
     /**
      * The body of the request
-     * @var Parameters
+     * @var Body
      */
-    public $body;
+    public Body $body;
 
-    /** @var Parameters */
-    public $cookies;
+    /** @var ArrayMap */
+    public ArrayMap $cookies;
 
-	/** @var Parameters The named route parameters */
-	public $params;
+    /**
+     * The content type for the request.
+     * This value is usually empty for GET requests
+     * @var string|null
+     */
+    protected ?string $content_type;
+
+    public string $hostname = '';
+
+    public string $httpVersion;
+
+    /**
+     * Contains the remote IP address of the request.
+     *
+     * When the trust proxy setting does not evaluate to false, the value of
+     * this property is derived from the left-most entry in the X-Forwarded-For
+     * header.
+     *
+     * @var string
+     */
+    public string $ip;
+
+    /**
+     * If the `trust proxy`, setting evaluates to true, this property contains
+     * an array of IP addresses specified in the X-Forwarded-For request header.
+     * Otherwise, it contains an empty array.
+     * @var string[]
+     */
+    public array $ips;
+
+    /**
+     * The HTTP method for the request
+     * @var string
+     */
+    public string $method;
+
+    public string $originalUrl;
+
+	/** @var ArrayMap The named route parameters */
+	public ArrayMap $params;
+
+    /**
+     * The url path for the request (after the base path)
+     * @var string
+     */
+    public string $path;
+
+    public int $port;
+
+    public string $protocol;
 
     /**
      * The query parameters
-     * @var Parameters
+     * @var ArrayMap
      */
-    public $query;
+    public ArrayMap $query;
 
     /**
      * @var Response The response for this request
      */
-    public $res;
+    public Response $res;
 	
-	/** @var Route */
-	public $route;
+	/** @var Route|null */
+	public ?Route $route;
 
     /** @var array */
-    private $props;
+    private array $props;
+
+    public bool $secure;
 	
 	/** @var array Usually $_SERVER */
-	private $server;
+	private array $server;
 	
 	/** @var float The request start time with milliseconds */
-	private $timestamp;
+	private float $timestamp;
 
 	/**
 	 * Create a new request object
@@ -67,28 +105,143 @@ class Request {
      * @param array $post
      * @param array $cookie
 	 */
-	public function __construct($app, $server, $get, $post, $cookie) {
+	public function __construct(Application $app, array $server, array $get, array $post, array $cookie) {
         $this->props = [];
         $this->app = $app;
 		$this->server = $server;
-		$this->query = new Parameters($get);
-        $this->cookies = new Parameters($cookie);
+		$this->query = new ArrayMap($get);
+        $this->cookies = new ArrayMap($cookie);
         $this->res = new Response($this);
 
+        // set the content type
+        $this->content_type = $server['CONTENT_TYPE'] ?? null;
+
+        // set the method
+        $this->method = $server['REQUEST_METHOD'] ?? 'GET';
+
+        // set the script name
+        if (php_sapi_name() == 'cli-server') {
+            $script_name = '';
+        } else {
+            $php_self = $this->server['PHP_SELF'] ?? '';
+            $path_info = $this->server['PATH_INFO'] ?? '';
+            $path_info_len = strlen($path_info);
+            if ($path_info && 0 === substr_compare($php_self, $path_info, -$path_info_len)) {
+                $script_name = substr($php_self, 0, -$path_info_len);
+            } else {
+                $script_name = $php_self;
+            }
+        }
+
+        // set the baseUrl
+        $this->baseUrl = substr (
+            $script_name,
+            0,
+            strrpos($script_name, '/' )
+        );
+
+        // set the path
+        $this->path = substr(
+            parse_url($this->server['REQUEST_URI'],PHP_URL_PATH),
+            strlen($this->baseUrl)
+        );
+
         // set the body
-        if(isset($server['CONTENT_TYPE']) && Str::endsWith($server['CONTENT_TYPE'],'json')) {
+        if(isset($this->content_type) && str_ends_with($this->content_type,'json')) {
             $content = json_decode(file_get_contents('php://input'),1);
             if($content && is_array($content)) {
-               $this->body = new Parameters($content);
+               $this->body = new Body($content);
             } else {
-                $this->body = new Parameters();
+                $this->body = new Body();
             }
         } else {
-            $this->body = new Parameters($post);
+            $this->body = new Body($post);
+        }
+
+        // set trust_proxy
+        $trust_proxy = false;
+        if ($trusted = $this->app->get('trust proxy')) {
+            if ($trusted === true || is_array($trusted) && in_array($this->server['REMOTE_ADDR'], $trusted)) {
+                $trust_proxy = true;
+            }
+        }
+
+        // set hostname
+        if ($trust_proxy && isset($this->server['HTTP_X_FORWARDED_HOST'])) {
+            $this->hostname = $this->server['HTTP_X_FORWARDED_HOST'];
+        } else if (isset($this->server['HTTP_HOST'])) {
+            $this->hostname = $this->server['HTTP_HOST'];
+        } else if (isset($this->server['SERVER_NAME'])) {
+            $this->hostname = $this->server['SERVER_NAME'];
+        }
+        if (($pos = strpos($this->hostname,':')) !== false) {
+            if (($port = intval(substr($this->hostname, $pos + 1))) > 0) {
+                $this->port = $port;
+            }
+            $this->hostname = substr($this->hostname,0, $pos);
+        }
+
+        // set the port
+        if ($trust_proxy && isset($this->server['HTTP_X_FORWARDED_PORT'])) {
+            $this->port = intval($this->server['HTTP_X_FORWARDED_PORT']);
+        } else {
+            $this->port = $this->port ?? $this->server['SERVER_PORT'] ?? 80;
+        }
+
+        // set the protocol
+        if($trust_proxy && isset($this->server['HTTP_X_FORWARDED_PROTO'])) {
+            $this->protocol = $this->server['HTTP_X_FORWARDED_PROTO'];
+        } else if(isset($this->server['HTTPS']) && $this->server['HTTPS'] !== 'off') {
+            $this->protocol =  'https';
+        } else if(443 == $this->port ||  8443 == $this->port) {
+            $this->protocol = 'https';
+        } else {
+            $this->protocol = 'http';
+        }
+
+        // set secure
+        $this->secure = $this->protocol === 'https';
+
+        // set originalUrl
+        $this->originalUrl = $this->protocol.'://'.$this->hostname;
+        if (80 != $this->port && 443 != $this->port) {
+            $this->originalUrl .= ':' . $this->port;
+        }
+        if(isset($this->server['REQUEST_URI'])) {
+            $this->originalUrl .= $this->server['REQUEST_URI'];
+        }
+
+        // set ips
+        if ($trust_proxy && isset($this->server['HTTP_X_FORWARDED_FOR'])) {
+            $this->ips = array_diff(
+                array_map(
+                    'trim',
+                    explode(
+                        ',',
+                        $this->server['HTTP_X_FORWARDED_FOR']
+                    )
+                ),
+                $this->app->get('trusted proxies')
+            );
+        } else {
+            $this->ips = [];
+        }
+
+        // set ip
+        if ($trust_proxy && !empty($this->ips)) {
+            $this->ip = reset($this->ips);
+        } else {
+            $this->ip = $this->server['REMOTE_ADDR'] ?? '127.0.0.1';
+        }
+
+        if (isset($this->server['SERVER_PROTOCOL']) && strlen($this->server['SERVER_PROTOCOL']) > 5) {
+            $this->httpVersion = substr($this->server['SERVER_PROTOCOL'], 5);
+        } else {
+            $this->httpVersion = '1.0';
         }
 
         // set the route
-        if ($this->method && !is_null($this->path)) {
+        if ($this->method) {
             $this->route = $app->router->match($this->method, $this->path);
         }
 	}
@@ -98,16 +251,9 @@ class Request {
      * @param string $name
      * @return mixed
      */
-	public function __get($name) {
-        if (isset($this->props[$name])) {
-            return $this->props[$name];
-        }
-        $method_name = 'get'. ucfirst($name);
-        if (method_exists($this, $method_name)) {
-            return $this->props[$name] = $this->$method_name();
-        }
-        return null;
-	}
+	public function __get(string $name): mixed {
+        return $this->props[$name] ?? null;
+    }
 
     /**
      * Magic method to set a property
@@ -115,158 +261,18 @@ class Request {
      * @param mixed $value
      * @return void
      */
-	public function __set($name,$value) {
+	public function __set(string $name, mixed $value) {
 		$this->props[$name] = $value;
 	}
 
     /**
      * Return the named request header.
      * @param string $name
-     * @param string $default
-     * @return string
-     */
-    public function get($name,$default=null) {
-        $name = 'HTTP_'.strtoupper(str_replace('-','_',$name));
-	 	if(isset($this->server[$name])) {
-	 		return $this->server[$name];
-	 	}
-	 	return $default;
-    }
-
-    protected function getBasePath(): string {
-        $scriptName = $this->scriptName;
-        return substr (
-            $scriptName,
-            0,
-            strrpos($scriptName, '/' ));
-    }
-
-    protected function getBaseUrl(): string {
-        return "{$this->protocol}://{$this->host}{$this->basePath}";
-    }
-
-    protected function getHost(): string {
-        $host = '';
-        if ($this->trustProxy && isset($this->server['HTTP_X_FORWARDED_HOST'])) {
-            $host = $this->server['HTTP_X_FORWARDED_HOST'];
-        } else if (isset($this->server['HTTP_HOST'])) {
-            $host = $this->server['HTTP_HOST'];
-        } else if (isset($this->server['SERVER_NAME'])) {
-            $host = $this->server['SERVER_NAME'];
-        }
-        $port = $this->port;
-        if(strpos($host,':') === false && 80 != $port && 443 != $port) {
-            $host .= ':' . $port;
-        }
-        return $host;
-    }
-
-    protected function getHostname(): string {
-        $host = $this->host;
-        if(!empty($host) && ($pos = strpos($host,':')) > 1) {
-            return substr($host,0,$pos);
-        }
-        return $host;
-    }
-
-    /**
-     * Returns the remote client IP address
+     * @param string|null $default
      * @return string|null
      */
-    protected function getIp(): ?string {
-        return $this->ips[0];
-    }
-
-    /**
-     * If there is trusted proxy and an X-Forwarded-For header, the method returns
-     * the address in the X-Forwarded-For header minus the trusted proxies.
-     * If there is no trusted proxy, the REMOTE_ADDR is the only IP returned.
-     * @return array
-     */
-    protected function getIps(): array {
-        $ips = null;
-        if ($this->trustProxy && isset($this->server['HTTP_X_FORWARDED_FOR'])) {
-            $ips = explode(',', $this->server['HTTP_X_FORWARDED_FOR']);
-            $ips = array_map('trim', $ips);
-            $ips = array_diff($ips, $this->app->get('trusted proxies'));
-        }
-        if (empty($ips)) {
-            $ips = [$this->server['REMOTE_ADDR'] ?? null];
-        }
-        return $ips;
-    }
-
-    protected function getMethod(): string {
-        return $this->server['REQUEST_METHOD'];
-    }
-
-    protected function getOriginalUrl(): string {
-        $originalUrl = "{$this->protocol}://{$this->host}";
-        if(isset($this->server['REQUEST_URI'])) {
-            $originalUrl .= $this->server['REQUEST_URI'];
-        }
-        return $originalUrl;
-    }
-
-    protected function getPath(): string {
-        return substr(
-            parse_url($this->server['REQUEST_URI'],PHP_URL_PATH),
-            strlen($this->basePath));
-    }
-
-    /**
-     * Returns the PORT that received the request
-     * @return int|null
-     */
-    protected function getPort(): ?int {
-        if ($this->trustProxy && isset($this->server['HTTP_X_FORWARDED_PORT'])) {
-            return intval($this->server['HTTP_X_FORWARDED_PORT']);
-        }
-        return $this->server['SERVER_PORT'] ?? 80;
-    }
-
-    protected function getProtocol(): string {
-        if($this->trustProxy && isset($this->server['HTTP_X_FORWARDED_PROTO'])) {
-            return $this->server['HTTP_X_FORWARDED_PROTO'];
-        } else if(isset($this->server['HTTPS']) && $this->server['HTTPS'] !== 'off') {
-            return "https";
-        } else if(443 == $this->port ||  8443 == $this->port) {
-            return "https";
-        }
-        return "http";
-    }
-
-    protected function getSecure(): bool {
-        if ($this->protocol == 'https') {
-            return true;
-        }
-        return false;
-    }
-
-    protected function getScriptName(): string {
-        // set the script name
-        if (php_sapi_name() == 'cli-server') {
-           return '';
-        }
-        $php_self = $this->server['PHP_SELF'] ?? '';
-        $path_info = $this->server['PATH_INFO'] ?? '';
-        $path_info_len = strlen($path_info);
-        if ($path_info && 0 === substr_compare($php_self, $path_info, -$path_info_len)) {
-            return substr($this->server['PHP_SELF'], 0, -$path_info_len);
-        }
-        return $php_self;
-    }
-
-    /**
-     * Returns true if the proxy can be trusted
-     * @return bool
-     */
-    protected function getTrustProxy(): bool {
-        if ($trusted = $this->app->get('trust proxy')) {
-            if ($trusted === true || is_array($trusted) && in_array($this->server['REMOTE_ADDR'], $trusted)) {
-                return true;
-            }
-        }
-        return false;
+    public function get(string $name, ?string $default = null): ?string {
+        $name = 'HTTP_'.strtoupper(str_replace('-','_',$name));
+        return $this->server[$name] ?? $default;
     }
 }

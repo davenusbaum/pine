@@ -1,19 +1,20 @@
 <?php
 namespace Pine\Middleware;
 
-use Nusbaum\Pine\Collection;
-use Nusbaum\Pine\Request;
-use Nusbaum\Pine\Response;
+use Pine\ArrayList;
+use Pine\Request;
+use Pine\Response;
 
-class Flash extends Collection {
+class Flash extends ArrayList {
 	const FLASH_KEY = 'flashMessages';
-	
-	/**
-	 * A generator to be added to a pine route.
-	 * @param Request $req
-	 * @param Response $res
-	 */
-	public function __invoke($req,$res,$next) {
+
+    /**
+     * A generator to be added to a pine route.
+     * @param Request $req
+     * @param Response $res
+     * @param callable|null $next
+     */
+	public function __invoke(Request $req, Response $res, ?Callable $next): void {
 		if($req->session->has(self::FLASH_KEY)) {
 			$this->addAll($req->session->get(self::FLASH_KEY));
 		}
@@ -31,10 +32,10 @@ class Flash extends Collection {
 	/**
 	 * Add a flash message to the message list
 	 * @param string $msg
-	 * @param number $type
-	 * @param string $field
+	 * @param int $type
+	 * @param ?string $field
 	 */
-	public function flash($msg,$type=1,$field=null) {
+	public function flash(string $msg, int $type = 1, ?string $field = null): void {
 		$fm = new FlashMessage($msg,$type,$field);
 		$this->add($fm);
 	}
@@ -43,7 +44,7 @@ class Flash extends Collection {
 	 * Add a success message to the message list
 	 * @param string $msg
 	 */
-	public function flashSuccess($msg) {
+	public function flashSuccess(string $msg): void {
 		$this->flash($msg,FlashMessage::SUCCESS);
 	}
 	
@@ -51,7 +52,7 @@ class Flash extends Collection {
 	 * Add an info message to the message list
 	 * @param string $msg
 	 */
-	public function flashInfo($msg) {
+	public function flashInfo(string $msg): void {
 		$this->flash($msg,FlashMessage::INFO);
 	}
 	
@@ -59,16 +60,16 @@ class Flash extends Collection {
 	 * Add a warning message to the message list
 	 * @param string $msg
 	 */
-	public function flashWarning($msg) {
+	public function flashWarning(string $msg): void {
 		$this->flash($msg,FlashMessage::WARNING);
 	}
-	
-	/**
-	 * Add an error message to the message list
-	 * @param string $msg
-	 */
-	public function flashError($msg,$field=null) {
+
+    /**
+     * Add an error message to the message list
+     * @param string $msg
+     * @param string|null $field
+     */
+	public function flashError(string $msg, ?string $field = null): void {
 		$this->flash($msg,FlashMessage::ERROR,$field);
 	}
-	
 }

@@ -1,14 +1,12 @@
 <?php
 
-namespace Pine\Unit;
-
 class HelloWorldController
 {
-    public function __invoke($req, $res, $next) {
+    public function __invoke($req, $res, $next): void {
         echo "Hello World!";
     }
 
-    public function hello($req, $res, $next) {
+    public function hello($req, $res, $next): void {
         echo "Hello World!!";
     }
 }
