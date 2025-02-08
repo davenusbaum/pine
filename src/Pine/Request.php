@@ -141,10 +141,14 @@ class Request {
         );
 
         // set the path
-        $this->path = substr(
-            parse_url($this->server['REQUEST_URI'],PHP_URL_PATH),
-            strlen($this->baseUrl)
-        );
+        if (isset($this->server['REQUEST_URI'])) {
+            $this->path = substr(
+                parse_url($this->server['REQUEST_URI'], PHP_URL_PATH),
+                strlen($this->baseUrl)
+            );
+        } else {
+            $this->path = '';
+        }
 
         // set the body
         if(isset($this->content_type) && str_ends_with($this->content_type,'json')) {

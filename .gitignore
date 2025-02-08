@@ -62,3 +62,4 @@ Temporary Items
 vendor/**
 tests/.phpunit.cache/test-results
 build/*
+/tests/.phpunit.cache

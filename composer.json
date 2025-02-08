@@ -20,7 +20,8 @@
 	"require-dev": {
 		"phpunit/phpunit": ">= 7.0 < 10",
 		"saggre/phpdocumentor-markdown": "dev-master",
-		"phpstan/phpstan": "2.1.x-dev"
+		"phpstan/phpstan": "2.1.x-dev",
+		"sempro/phpunit-pretty-print": "dev-develop"
 	},
 	"autoload" : {
 		"psr-4" : {
